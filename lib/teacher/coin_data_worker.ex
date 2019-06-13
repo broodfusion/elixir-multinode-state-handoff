@@ -3,6 +3,15 @@ defmodule Teacher.CoinDataWorker do
 
   alias Teacher.CoinData
 
+  def child_spec(opts \\ []) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [%{id: :btc}]},
+      shutdown: 10_000,
+      restart: :permanent
+    }
+  end
+
   def start_link(args) do
     id = Map.get(args, :id)
     GenServer.start_link(__MODULE__, args, name: id)
@@ -39,22 +48,6 @@ defmodule Teacher.CoinDataWorker do
     # {:noreply, put_in(state.btc, price)}
     {:noreply, updated_state}
   end
-
-  # defp put_global_state(state) do
-  #   :ok = Horde.Registry.put_meta(Teacher.CoinDataRegistry, "state", state)
-  #   state
-  # end
-
-  # defp get_global_counter() do
-  #   case Horde.Registry.meta(HelloWorld.HelloRegistry, "state") do
-  #     {:ok, state} ->
-  #       state
-
-  #     :error ->
-  #       put_global_state(0)
-  #       get_global_state()
-  #   end
-  # end
 
   defp update_state(%{"display_name" => name, "price_usd" => price}, existing_state) do
     Map.merge(existing_state, %{name: name, price: price})

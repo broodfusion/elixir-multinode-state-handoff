@@ -15,8 +15,8 @@ defmodule Teacher.Application do
          name: Teacher.CoinDataSupervisor,
          strategy: :one_for_one,
          distribution_strategy: Horde.UniformQuorumDistribution,
-         #  max_restarts: 100_000,
-         #  max_seconds: 1,
+         max_restarts: 100_000,
+         max_seconds: 1,
          members: supervisor_members()
        ]},
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies)]},
@@ -42,10 +42,11 @@ defmodule Teacher.Application do
                #      {Teacher.CoinDataRegistry, node}
                #    )
                Horde.Supervisor.wait_for_quorum(Teacher.CoinDataSupervisor, 30_000)
+               #  Horde.Supervisor.start_child(HelloWorld.HelloSupervisor, HelloWorld.SayHello)
 
                Horde.Supervisor.start_child(
                  Teacher.CoinDataSupervisor,
-                 Supervisor.child_spec({Teacher.CoinDataWorker, %{id: :btc}}, id: :btc)
+                 Teacher.CoinDataWorker
                )
 
                Node.list()
@@ -83,16 +84,16 @@ defmodule Teacher.Application do
   defp registry_members do
     [
       {Teacher.CoinDataRegistry, :"a@127.0.0.1"},
-      {Teacher.CoinDataRegistry, :"b@127.0.0.1"},
-      {Teacher.CoinDataRegistry, :"c@127.0.0.1"}
+      {Teacher.CoinDataRegistry, :"b@127.0.0.1"}
+      # {Teacher.CoinDataRegistry, :"c@127.0.0.1"}
     ]
   end
 
   defp supervisor_members do
     [
       {Teacher.CoinDataSupervisor, :"a@127.0.0.1"},
-      {Teacher.CoinDataSupervisor, :"b@127.0.0.1"},
-      {Teacher.CoinDataSupervisor, :"c@127.0.0.1"}
+      {Teacher.CoinDataSupervisor, :"b@127.0.0.1"}
+      # {Teacher.CoinDataSupervisor, :"c@127.0.0.1"}
     ]
   end
 end
