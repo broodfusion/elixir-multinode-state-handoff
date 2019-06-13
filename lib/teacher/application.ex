@@ -15,12 +15,12 @@ defmodule Teacher.Application do
          name: Teacher.CoinDataSupervisor,
          strategy: :one_for_one,
          distribution_strategy: Horde.UniformQuorumDistribution,
-         max_restarts: 100_000,
-         max_seconds: 1,
+         #  max_restarts: 100_000,
+         #  max_seconds: 1,
          members: supervisor_members()
        ]},
       {Cluster.Supervisor, [Application.get_env(:libcluster, :topologies)]},
-      {StateHandoff, []},
+      {Teacher.StateHandoff, []},
       %{
         id: Teacher.ClusterConnector,
         restart: :transient,
@@ -49,7 +49,9 @@ defmodule Teacher.Application do
                )
 
                Node.list()
-               |> Enum.each(&StateHandoff.join(&1))
+               |> Enum.each(fn node ->
+                 :ok = Teacher.StateHandoff.join(node)
+               end)
 
                #  Enum.each([:btc, :eth, :ltc], fn coin ->
                #    Horde.Supervisor.start_child(
@@ -58,7 +60,7 @@ defmodule Teacher.Application do
                #    )
 
                #    # add this line below
-               #    #  :ok = StateHandoff.join(node)
+               #    #  :ok = Teacher.StateHandoff.join(node)
                #  end)
              end
            ]}
@@ -68,6 +70,7 @@ defmodule Teacher.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Teacher.Supervisor]
+
     Supervisor.start_link(children, opts)
   end
 

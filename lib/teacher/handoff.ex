@@ -1,4 +1,4 @@
-defmodule StateHandoff do
+defmodule Teacher.StateHandoff do
   use GenServer
   require Logger
 
@@ -35,6 +35,7 @@ defmodule StateHandoff do
     # custom config for aggressive CRDT sync
     {:ok, crdt_pid} =
       DeltaCrdt.start_link(DeltaCrdt.AWLWWMap,
+        notify: {self(), :members_updated},
         sync_interval: 5,
         ship_interval: 5,
         ship_debounce: 1

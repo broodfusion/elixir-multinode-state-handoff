@@ -10,13 +10,14 @@ defmodule Teacher.CoinDataWorker do
 
   def init(state) do
     Process.flag(:trap_exit, true)
+
     schedule_coin_fetch()
     {:ok, state}
   end
 
   def terminate(_reason, %{id: type, price: price}) do
     IO.puts("Triggering the terminate function!")
-    StateHandoff.handoff(type, price)
+    Teacher.StateHandoff.handoff(type, price)
     :ok
   end
 
