@@ -10,7 +10,7 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :teacher, key: :value
+#     config :multi_node_example, key: :value
 config :libcluster, :topologies,
   hello_cluster: [
     strategy: Cluster.Strategy.Gossip
@@ -22,7 +22,7 @@ config :libcluster, :topologies,
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:teacher, :key)
+#     Application.get_env(:multi_node_example, :key)
 #
 # You can also configure a 3rd-party app:
 #
