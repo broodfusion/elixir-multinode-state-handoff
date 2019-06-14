@@ -1,8 +1,8 @@
 defmodule TeacherTest do
   use ExUnit.Case
-  doctest Teacher
+  doctest Example
 
   test "greets the world" do
-    assert Teacher.hello() == :world
+    assert Example.hello() == :world
   end
 end

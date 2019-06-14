@@ -1,4 +1,4 @@
-defmodule Teacher.CoinData do
+defmodule Example.CoinData do
   def fetch(id) do
     id
     |> Atom.to_string()

@@ -1,4 +1,4 @@
-# Teacher
+# Example
 
 **TODO: Add description**
 

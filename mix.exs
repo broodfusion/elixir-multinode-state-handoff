@@ -1,4 +1,4 @@
-defmodule Teacher.MixProject do
+defmodule Example.MixProject do
   use Mix.Project
 
   def project do
@@ -15,7 +15,7 @@ defmodule Teacher.MixProject do
   def application do
     [
       extra_applications: [:logger, :httpoison],
-      mod: {Teacher.Application, []}
+      mod: {Example.Application, []}
     ]
   end
 
@@ -25,9 +25,8 @@ defmodule Teacher.MixProject do
       {:httpoison, "~> 1.2"},
       {:jason, "~> 1.0"},
       {:libcluster, "~> 3.0.3"},
-      {:horde, "~> 0.6.0"}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+      {:horde, git: "https://github.com/derekkraan/horde.git"},
+      {:delta_crdt, git: "https://github.com/derekkraan/delta_crdt_ex.git", override: true}
     ]
   end
 end

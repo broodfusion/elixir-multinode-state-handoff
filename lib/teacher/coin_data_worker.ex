@@ -1,7 +1,7 @@
-defmodule Teacher.CoinDataWorker do
+defmodule Example.CoinDataWorker do
   use GenServer
 
-  alias Teacher.CoinData
+  alias Example.CoinData
 
   def child_spec(opts \\ []) do
     %{
@@ -26,7 +26,7 @@ defmodule Teacher.CoinDataWorker do
 
   def terminate(_reason, %{id: type, price: price}) do
     IO.puts("Triggering the terminate function!")
-    Teacher.StateHandoff.handoff(type, price)
+    Example.StateHandoff.handoff(type, price)
     :ok
   end
 

@@ -1,6 +1,6 @@
-defmodule Teacher do
+defmodule Example do
   @moduledoc """
-  Documentation for Teacher.
+  Documentation for Example.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Teacher do
 
   ## Examples
 
-      iex> Teacher.hello
+      iex> Example.hello
       :world
 
   """
