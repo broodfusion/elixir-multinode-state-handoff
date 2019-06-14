@@ -19,8 +19,7 @@ defmodule Example.Counter do
 
   def init(_args) do
     Process.flag(:trap_exit, true)
-    count = get_global_counter()
-    # count = Example.StateHandoff.getcount()
+    count = Example.StateHandoff.getcount()
     IO.puts("Current count is: #{count}")
     send(self(), :say_hello)
 
@@ -32,20 +31,17 @@ defmodule Example.Counter do
     {:stop, :shutdown, state}
   end
 
-  def terminate(_reason, count) do
-    IO.puts("Triggering the terminate function! count is #{count}")
-    # Example.StateHandoff.handoff(count)
-    put_global_counter(count)
-    :ok
+  def handle_info(:say_hello, count) do
+    Logger.info("HELLO from node #{inspect(Node.self())}")
+    Logger.info("Current count is: #{inspect(count)}")
+    Process.send_after(self(), :say_hello, 10000)
+
+    # {:noreply, put_global_counter(counter + 1)}
+    {:noreply, Example.StateHandoff.setcount(count + 1)}
   end
 
-  def handle_info(:say_hello, counter) do
-    Logger.info("HELLO from node #{inspect(Node.self())}")
-    Logger.info("Current count is: #{inspect(counter)}")
-    Process.send_after(self(), :say_hello, 5000)
-
-    {:noreply, put_global_counter(counter + 1)}
-    # {:noreply, counter + 1}
+  def terminate(_reason, count) do
+    :ok = Example.StateHandoff.handoff(count)
   end
 
   defp get_global_counter() do
@@ -62,10 +58,6 @@ defmodule Example.Counter do
   defp put_global_counter(counter_value) do
     :ok = Horde.Registry.put_meta(Example.MyRegistry, "count", counter_value)
     counter_value
-  end
-
-  def handle_call(:how_many?, _from, counter) do
-    {:reply, counter, counter}
   end
 
   def via_tuple(name), do: {:via, Horde.Registry, {Example.MyRegistry, name}}

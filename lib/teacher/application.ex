@@ -16,18 +16,18 @@ defmodule Example.Application do
     ]
 
     children = [
-      # {Example.StateHandoff, []},
       {Horde.Registry, [name: Example.MyRegistry, keys: :unique, members: registry_members()]},
       {Horde.Supervisor,
        [
          name: Example.MySupervisor,
          strategy: :one_for_one,
          #  distribution_strategy: Horde.UniformQuorumDistribution,
-         #  max_restarts: 100_000,
-         #  max_seconds: 1,
+         max_restarts: 100_000,
+         max_seconds: 1,
          members: supervisor_members()
        ]},
       {Cluster.Supervisor, [topologies, [name: Example.ClusterSupervisor]]},
+      {Example.StateHandoff, []},
       %{
         id: Example.ClusterConnector,
         restart: :transient,
@@ -35,7 +35,7 @@ defmodule Example.Application do
           {Task, :start_link,
            [
              fn ->
-               #  Horde.Supervisor.wait_for_quorum(Example.MySupervisor, 30_000)
+               Horde.Supervisor.wait_for_quorum(Example.MySupervisor, 30_000)
                #  Horde.Supervisor.start_child(HelloWorld.HelloSupervisor, HelloWorld.SayHello)
 
                #  Horde.Supervisor.start_child(
@@ -47,10 +47,10 @@ defmodule Example.Application do
                  Example.Counter
                )
 
-               #  Node.list()
-               #  |> Enum.each(fn node ->
-               #    Example.StateHandoff.join(node)
-               #  end)
+               Node.list()
+               |> Enum.each(fn node ->
+                 Example.StateHandoff.join(node)
+               end)
              end
            ]}
       }
