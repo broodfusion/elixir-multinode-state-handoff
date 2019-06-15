@@ -19,11 +19,25 @@ defmodule Example.Counter do
 
   def init(_args) do
     Process.flag(:trap_exit, true)
-    count = Example.StateHandoff.getcount()
+    # count = Example.StateHandoff.getcount()
+    Logger.warn("getting from redis")
+    count = get_count_from_redis("count")
+
     IO.puts("Current count is: #{count}")
     send(self(), :say_hello)
 
     {:ok, count}
+  end
+
+  def get_count_from_redis(key) do
+    case Redix.command(:redix, ["GET", key]) do
+      {:ok, nil} ->
+        0
+
+      {:ok, count} ->
+        Redix.command(:redix, ["DEL", key])
+        String.to_integer(count)
+    end
   end
 
   def handle_info({:EXIT, _from, _reason}, state) do
@@ -37,11 +51,14 @@ defmodule Example.Counter do
     Process.send_after(self(), :say_hello, 10000)
 
     # {:noreply, put_global_counter(counter + 1)}
-    {:noreply, Example.StateHandoff.setcount(count + 1)}
+    # {:noreply, Example.StateHandoff.setcount(count + 1)}
+    {:noreply, count + 1}
   end
 
   def terminate(_reason, count) do
-    :ok = Example.StateHandoff.handoff(count)
+    Redix.command(:redix, ["SET", "count", count])
+    Logger.warn("Done setting count in redis")
+    # :ok = Example.StateHandoff.handoff(count)
   end
 
   defp get_global_counter() do

@@ -16,7 +16,10 @@ defmodule Example.Application do
     ]
 
     children = [
+      {Cluster.Supervisor, [topologies, [name: Example.ClusterSupervisor]]},
+      {Example.StateHandoff, []},
       {Horde.Registry, [name: Example.MyRegistry, keys: :unique, members: registry_members()]},
+      {Redix, {"redis://localhost:6379", [name: :redix]}},
       {Horde.Supervisor,
        [
          name: Example.MySupervisor,
@@ -26,8 +29,6 @@ defmodule Example.Application do
          max_seconds: 1,
          members: supervisor_members()
        ]},
-      {Cluster.Supervisor, [topologies, [name: Example.ClusterSupervisor]]},
-      {Example.StateHandoff, []},
       %{
         id: Example.ClusterConnector,
         restart: :transient,

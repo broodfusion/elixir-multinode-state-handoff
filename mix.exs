@@ -25,6 +25,7 @@ defmodule Example.MixProject do
       {:httpoison, "~> 1.2"},
       {:jason, "~> 1.0"},
       {:libcluster, "~> 3.0.3"},
+      {:redix, ">= 0.0.0"},
       {:horde, git: "https://github.com/derekkraan/horde.git"},
       {:delta_crdt, git: "https://github.com/derekkraan/delta_crdt_ex.git", override: true}
     ]
