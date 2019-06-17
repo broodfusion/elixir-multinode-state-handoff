@@ -29,13 +29,37 @@ defmodule Example.Counter do
     {:ok, count}
   end
 
+  @doc """
+  iex(5)> Redix.command(conn, ["JSON.SET", "arr", ".", '[{"hello": true}]' ])
+  {:ok, "OK"}
+  iex(6)> Redix.command(conn, ["JSON.GET", "arr"])
+  {:ok, "[{\"hello\":true}]"}
+  iex(7)> Redix.command(conn, ["JSON.TYPE", "arr"])
+  {:ok, "array"}
+  iex(8)> Redix.command(conn, ["JSON.SET", "arr", ".", '{"hello": true, "user": "bob"}' ])
+  {:ok, "OK"}
+  iex(9)> Redix.command(conn, ["JSON.GET", "arr"])
+  {:ok, "{\"hello\":true,\"user\":\"bob\"}"}
+  iex(10)> Redix.command(conn, ["JSON.SET", "arr", ".", '{"hello": true, "user": {"first_name": "bob"}}' ])
+  {:ok, "OK"}
+  iex(11)> Redix.command(conn, ["JSON.GET", "arr"])
+  {:ok, "{\"hello\":true,\"user\":{\"first_name\":\"bob\"}}"}
+  iex(12)> {:ok, json} = Redix.command(conn, ["JSON.GET", "arr"])
+  {:ok, "{\"hello\":true,\"user\":{\"first_name\":\"bob\"}}"}
+  iex(13)> json
+  "{\"hello\":true,\"user\":{\"first_name\":\"bob\"}}"
+  iex(14)> Jason.encode(json)
+  {:ok, "\"{\\\"hello\\\":true,\\\"user\\\":{\\\"first_name\\\":\\\"bob\\\"}}\""}
+  iex(15)> Jason.decode(json)
+  {:ok, %{"hello" => true, "user" => %{"first_name" => "bob"}}}
+  """
   def get_count_from_redis(key) do
-    case Redix.command(:redix, ["GET", key]) do
+    case Redix.command(:redix, ["JSON.GET", key]) do
       {:ok, nil} ->
         0
 
       {:ok, count} ->
-        Redix.command(:redix, ["DEL", key])
+        Redix.command(:redix, ["JSON.DEL", key])
         String.to_integer(count)
     end
   end
@@ -56,7 +80,7 @@ defmodule Example.Counter do
   end
 
   def terminate(_reason, count) do
-    Redix.command(:redix, ["SET", "count", count])
+    Redix.command(:redix, ["JSON.SET", "count", ".", count])
     Logger.warn("Done setting count in redis")
     # :ok = Example.StateHandoff.handoff(count)
   end
