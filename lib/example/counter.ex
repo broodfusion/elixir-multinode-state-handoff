@@ -35,7 +35,7 @@ defmodule Example.Counter do
   iex(3)> {:ok, json} = Jason.encode(map)
   iex(7)> Redix.command(conn, ["JSON.SET", "map", ".", json])
   {:ok, "OK"}
-  iex(4)> Redix.command(conn, ["JSON.GET", "arr"])
+  iex(4)> Redix.command(conn, ["JSON.GET", "map"])
   {:ok, "{\"hello\":\"there\",\"user\":{\"name\":\"bob\"}}"}
   iex(9)> Redix.command(conn, ["JSON.TYPE", "map"])
   {:ok, "object"}
